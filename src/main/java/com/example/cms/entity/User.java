@@ -33,4 +33,8 @@ public class User {
 	private LocalDateTime createdAt;
 	@LastModifiedDate
 	private LocalDateTime lastModifiedAt;
+	
+	private boolean deleted;
+
+	
 }
