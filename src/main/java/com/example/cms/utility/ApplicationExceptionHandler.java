@@ -4,7 +4,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
+import com.example.cms.exception.BlogAlreadyExistsByTitleException;
+import com.example.cms.exception.BlogNotFoundByIdException;
+import com.example.cms.exception.TitleNotAvailableException;
 import com.example.cms.exception.UserAlreadyExitsByEmailException;
 import com.example.cms.exception.UserNotFoundByIdException;
 
@@ -38,5 +40,24 @@ public class ApplicationExceptionHandler {
 		return errorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), "User with given Id not exists");
 	}
 	
+
+	@ExceptionHandler
+	public ResponseEntity<ErrorStructure<String>> handleBlogAlreadyExistsByTitleException
+	                          (BlogAlreadyExistsByTitleException ex){
+		return errorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), "Blog with given title already exists");
+	}
+	
+	@ExceptionHandler
+	public ResponseEntity<ErrorStructure<String>> handleTitleNotAvailableException
+	                          (TitleNotAvailableException ex){
+		return errorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), "Title is less than 1");
+	}
+	
+	@ExceptionHandler
+	public ResponseEntity<ErrorStructure<String>> handleBlogNotFoundByIdException
+	                          (BlogNotFoundByIdException ex){
+		return errorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), "Blog with given Id not exits");
+	}
+
 	
 }
