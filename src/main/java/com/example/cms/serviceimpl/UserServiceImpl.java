@@ -6,6 +6,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.example.cms.entity.User;
 import com.example.cms.exception.UserAlreadyExitsByEmailException;
+import com.example.cms.exception.UserNotFoundByIdException;
 import com.example.cms.repository.UserRepository;
 import com.example.cms.requestdto.UserRequest;
 import com.example.cms.responsedto.UserResponse;
@@ -35,6 +36,32 @@ public class UserServiceImpl implements UserService {
 				                          .setBody(mapToUserResponse(user)));
 	}
 	
+	@Override
+	public ResponseEntity<ResponseStructure<UserResponse>> softDeleteUserById(int userId) {
+		
+		return userRepo.findById(userId).map(user->{
+			user.setDeleted(true);
+			userRepo.save(user);
+			return ResponseEntity.ok(structure.setStatusCode(HttpStatus.OK.value())
+					                          .setMessage("User Deleted")
+					                          .setBody(mapToUserResponse(user)));
+		}).orElseThrow(()-> new UserNotFoundByIdException("User Id not found"));
+		
+	}
+	
+	@Override
+	public ResponseEntity<ResponseStructure<UserResponse>> findUserById(int userId) {
+		return userRepo.findById(userId).map(user->{
+			if(!user.isDeleted()) 
+			return ResponseEntity.ok(structure.setStatusCode(HttpStatus.OK.value())
+                    .setMessage("User Found")
+                    .setBody(mapToUserResponse(user)));
+			throw new UserNotFoundByIdException("User Id Already deleted");
+			
+         }).orElseThrow(()-> new UserNotFoundByIdException("User Id not found"));
+	}
+	
+	
 	private UserResponse mapToUserResponse(User user) {
 		return UserResponse.builder()
 				.userId(user.getUserId())
@@ -42,7 +69,7 @@ public class UserServiceImpl implements UserService {
 				.email(user.getEmail())
 				.createdAt(user.getCreatedAt())
 			    .lastModifiedAt(user.getLastModifiedAt())
-				.build();
+			    .build();
 	}
 
 	private User mapToUserEntity(UserRequest userRequest, User user){
@@ -53,4 +80,5 @@ public class UserServiceImpl implements UserService {
 		user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
 		return user;
 	}
+
 }

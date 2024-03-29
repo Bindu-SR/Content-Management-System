@@ -40,6 +40,7 @@ public class ApplicationExceptionHandler {
 		return errorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), "User with given Id not exists");
 	}
 	
+
 	@ExceptionHandler
 	public ResponseEntity<ErrorStructure<String>> handleBlogAlreadyExistsByTitleException
 	                          (BlogAlreadyExistsByTitleException ex){
@@ -57,5 +58,6 @@ public class ApplicationExceptionHandler {
 	                          (BlogNotFoundByIdException ex){
 		return errorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), "Blog with given Id not exits");
 	}
+
 	
 }
